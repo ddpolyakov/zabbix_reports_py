@@ -15,13 +15,14 @@ ofile="./report"+date_text+".xlsx"
 wb = Workbook ()
 
 def get_data(g):
+    'функция сбора latest data в конкретной группе'    #исправить вывод словаря с данными на return
     for host in zapi.host.get(groupids=g, output="hostid"):
         hname = zapi.host.get(output=("hostid","name"),hostids=host)[0]['name']
         hid = zapi.host.get(output=("hostid","name"),hostids=host)[0]['hostid']
         dict1[hname]={}
         for items in zapi.item.get(output=["lastvalue","name"], hostids=hid):
             itname = items['name']
-            if itname == "Время работы":
+            if itname == "Время работы":    #Можно изменить фильтр для выборки данных для преобразования
                 m,s = divmod(int(items['lastvalue']), 60)
                 h,m = divmod(m, 60)
                 d,h = divmod(h, 24)
@@ -29,10 +30,10 @@ def get_data(g):
                 print(itvalue)
             else:
                 itvalue=items['lastvalue']
-            #print(hname,itname,itvalue)
             dict1[hname][itname]=itvalue
 
 def add_sheet(d,groupname):
+    'функция добавления данных в excel формат'
     if wb.active.title == "Sheet":
         wb.remove_sheet(wb.active)
     ws=wb.create_sheet(title=groupname)
